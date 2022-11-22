@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const request = axios.create({
-  baseURL: "http://localhost:3020/api/",
+  baseURL: "https://lauwang-api.onrender.com/api/",
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json',
