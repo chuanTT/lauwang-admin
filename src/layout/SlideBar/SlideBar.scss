@@ -141,7 +141,7 @@
 .pcoded-navbar .pcoded-inner-navbar a > span {
   text-align: left;
   padding: 7px 15px;
-  margin: 5px 0 0;
+  // margin: 5px 0 0;
   display: block;
   border-radius: 0;
   position: relative;
@@ -513,7 +513,7 @@
   width: 3px;
   height: calc(100% - 5px);
 }
-.pcoded-navbar .pcoded-inner-navbar > a.active > span,
+.pcoded-navbar .pcoded-inner-navbar a.active > span,
 .pcoded-navbar .pcoded-inner-navbar > a.pcoded-trigger > span {
   background: #333f54;
   color: #fff;
@@ -980,4 +980,55 @@
 .pcoded-navbar.theme-horizontal ~ .pcoded-main-container {
   margin-top: 140px;
   margin-left: 0;
+}
+
+.nav-content .pcoded-submenu li {
+  position: relative;
+}
+
+.pcoded-navbar a {
+  color: #a9b7d0;
+}
+
+.pcoded-submenu li > a:before {
+  content: "";
+  border-radius: 50%;
+  position: absolute;
+  top: 16px;
+  left: 35px;
+  width: 5px;
+  height: 5px;
+}
+
+.pcoded-submenu > li > a.active:before,
+.pcoded-submenu > li > a:focus:before,
+.pcoded-submenu > li > a:hover:before {
+  background: #1dc4e9;
+}
+
+.pcoded-submenu li > a.active,
+.pcoded-submenu li > a:focus,
+.pcoded-submenu li > a:hover {
+  color: #1dc4e9;
+}
+.nav-content .pcoded-submenu li a {
+  text-align: left;
+  padding: 7px 7px 7px 60px;
+  margin: 0;
+  display: block;
+}
+
+.pcoded-micon,
+.pcoded-mtext,
+.nav-link {
+  pointer-events: none;
+}
+
+.nav-content:not(.pcoded-hasmenu) .pcoded-submenu{
+  display: none;
+}
+
+.pcoded-submenu {
+  transition: height .5s ease;
+  overflow: hidden;
 }

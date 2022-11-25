@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 
 const ImagesField = (prop) => {
   const dataFile = useRef(new DataTransfer());
   const files = useRef();
-  const { field, form, height, width } = prop;
+  const { field, form, height, width, msgSize, sizeFile, validType, msgType, defaultSrc, resertFile } =
+    prop;
   const { name, value, onBlur } = field;
+  const { errors } = form;
+  const showError = errors[name];
   const [avatar, setAvatar] = useState();
 
   useEffect(() => {
@@ -12,6 +16,14 @@ const ImagesField = (prop) => {
       avatar && URL.revokeObjectURL(avatar.preview);
     };
   }, [avatar]);
+
+  useEffect(() => {
+    if(defaultSrc) {
+      setAvatar((preStates) => {
+        return {...preStates, preview: defaultSrc}
+      });
+    }
+  }, []);
 
   const delFiles = (e) => {
     e.stopPropagation();
@@ -22,18 +34,47 @@ const ImagesField = (prop) => {
 
   const handelPreview = (e) => {
     let file = e.target.files[0];
+
     if (file) {
+      if (!validType.includes(file.type)) {
+        e.target.value = "";
+        form.setFieldError(name, msgType || "Định dạng file không hợp lệ");
+        return;
+      }
+      let size = (file.size / 1024 / 1024).toFixed(2);
+      if (!(size <= sizeFile)) {
+        e.target.value = "";
+        form.setFieldError(
+          name,
+          msgSize || "Dung dượng file vượt quá giới hạn"
+        );
+        return;
+      }
       dataFile.current.items.clear();
       dataFile.current.items.add(file);
-    } else {
+    } else if (dataFile.current.files.length > 0) {
       file = dataFile.current.files;
       e.target.files[0] = file;
+    } else {
+      return;
     }
 
     file.preview = URL.createObjectURL(file);
     setAvatar(file);
     form.setFieldValue(name, file);
   };
+
+  useEffect(() => {
+    if(resertFile) {
+      if(avatar?.preview) {
+        setAvatar(preStates => {
+          let {preview, ...rest} = preStates;
+
+          return rest
+        })
+      }
+    }
+  }, [resertFile, avatar])
 
   return (
     <div className="form-group">
@@ -85,8 +126,8 @@ const ImagesField = (prop) => {
               style={{ fontSize: 30, color: "white" }}
             ></i>
             <span style={{ color: "white", textAlign: "center" }}>
-              Lưu ý: chỉ chấp nhận định dạng ảnh: png, jpg và kích thước tối
-              thiểu 200 x 200
+              Lưu ý: chỉ chấp nhận định dạng: {validType.join(", ")} và dung
+              lượng tối đa {sizeFile}MB
             </span>
           </div>
         )}
@@ -101,10 +142,36 @@ const ImagesField = (prop) => {
           </div>
         )}
       </div>
-      {/* <label htmlFor={name}>{title}</label> */}
-      {/* {showError && <small className="form-text text-muted">{errors[name]}</small>} */}
+      {showError && (
+        <small className="form-text text-danger text-left">{errors[name]}</small>
+      )}
     </div>
   );
+};
+
+ImagesField.prototype = {
+  field: PropTypes.object.isRequired,
+  form: PropTypes.object.isRequired,
+
+  height: PropTypes.string,
+  width: PropTypes.string,
+  msgSize: PropTypes.string,
+  sizeFile: PropTypes.number,
+  validType: PropTypes.array,
+  msgType: PropTypes.string,
+  defaultSrc: PropTypes.string,
+  resertFile: PropTypes.bool
+};
+
+ImagesField.defaultProps = {
+  height: "200px",
+  width: "200px",
+  msgSize: "Không được vượt quá định dạng",
+  sizeFile: 5,
+  validType: ["image/jpg", "image/jpeg", "image/png"],
+  msgType: "File không đúng dịnh dạng",
+  defaultSrc: "",
+  resertFile: false
 };
 
 export default ImagesField;

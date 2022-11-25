@@ -1,21 +1,26 @@
 const InputField = (prop) => {
-  const { field, form, placeholder, ...rest } = prop;
+  const { field, form, placeholder, isLabel = false, title, idLable, isLabelPostion=true,styleFormGroup={}, ...rest } = prop;
   const { name } = field;
-  const {errors, touched } = form;
+  const { errors, touched } = form;
   const showError = errors[name] && touched[name];
 
   return (
-    <div className="form-group">
-      {/* <label htmlFor={name}>{title}</label> */}
+    <div className="form-group" style={styleFormGroup}>
+      {isLabel && isLabelPostion && <label htmlFor={idLable || name}>{title}</label>}
       <input
         type="text"
         className="form-control"
-        id={name}
+        id={idLable||name}
         {...field}
         placeholder={placeholder}
         {...rest}
       />
-      {showError && <small className="form-text text-danger text-left">{errors[name]}</small>}
+      {isLabel && !isLabelPostion &&<label htmlFor={idLable || name}>{title}</label>}
+      {showError && (
+        <small className="form-text text-danger text-left">
+          {errors[name]}
+        </small>
+      )}
     </div>
   );
 };

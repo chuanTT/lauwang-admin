@@ -1,5 +1,5 @@
 import { Formik, Form, FastField } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
 
 import { ImagesField, InputField, TextareaField } from "../CustomField";
@@ -13,6 +13,7 @@ const FormMenu = () => {
   const { titleToast, setIsLoading, isLoading, setShowToast } =
     useContext(showToastContext);
   const [dataForm, setFormData] = useState({});
+  const isResetFile = useRef(false)
 
   const initialValues = {
     name: "",
@@ -27,30 +28,33 @@ const FormMenu = () => {
     desc: Yup.string().required("Vui lòng nhập mô tả"),
   });
 
-  const handelSubmit = (values) => {
+  const handelSubmit = (values, {resetForm }) => {
     setIsLoading((pre) => !pre);
-    setFormData(values);
+    setFormData({
+      values,
+      resetForm
+    });
   };
 
   useEffect(() => {
     if (isLoading && dataForm) {
-      let data = SendFormData(dataForm);
+      let data = SendFormData(dataForm?.values);
 
       const sendData = async () => {
         const response = await menuServices.addMenu(data, token);
 
-        console.log(response);
+        if (response?.status === 200) {
+          titleToast.current.msg = "Thêm thành công";
+          titleToast.current.type = "success";
+          dataForm.resetForm();
+          isResetFile.current = true;
+        } else {
+          titleToast.current.msg = "Thêm thất bại";
+          titleToast.current.type = "erorr";
+        }
 
-        // if (response?.status === 200) {
-        //   titleToast.current.msg = "Thêm thành công";
-        //   titleToast.current.type = "success";
-        // } else {
-        //   titleToast.current.msg = "Thêm thất bại";
-        //   titleToast.current.type = "erorr";
-        // }
-
-        // setIsLoading((pre) => !pre);
-        // setShowToast((pre) => !pre);
+        setIsLoading((pre) => !pre);
+        setShowToast((pre) => !pre);
       };
 
       sendData();
@@ -99,6 +103,7 @@ const FormMenu = () => {
                         name={"thumbnail"}
                         height={"200px"}
                         width={"200px"}
+                        resertFile={isResetFile.current}
                       />
                     </div>
 
@@ -115,7 +120,7 @@ const FormMenu = () => {
               </div>
               <button
                 className="btn btn-primary shadow-2 mb-4"
-                disabled={titleToast.current.type === "success" ? true : false}
+                disabled={titleToast.current.type === "success"}
                 type="submit"
               >
                 Thêm

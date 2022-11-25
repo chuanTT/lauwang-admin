@@ -15,7 +15,7 @@ const TextareaField = (prop) => {
         id={name}
         placeholder={placeholder}
         rows={rows}
-      ></textarea>
+      >{value}</textarea>
       {showError && <small className="form-text text-danger text-left">{errors[name]}</small>}
     </div>
   );

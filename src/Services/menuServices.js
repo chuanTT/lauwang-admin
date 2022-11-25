@@ -19,3 +19,15 @@ export const DeleteMenu = async (id, token) => {
 
     return response;
 }
+
+export const detailsMenu = async (id) => {
+    let response = await resquest.get(`${folderName}/details_menu/${id}`)
+
+    return response;
+}
+
+export const EditMenu = async (data, token) => {
+    let response = await resquest.put(`${folderName}/edit_menu`, data, token)
+
+    return response;
+}

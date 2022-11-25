@@ -8,7 +8,7 @@ const Toast = ({ type, isShowToast, title, callBack = () => {} }) => {
     if (isShowToast) {
       const settings = {
         position: "top-right",
-        autoClose: 1200,
+        autoClose: 500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

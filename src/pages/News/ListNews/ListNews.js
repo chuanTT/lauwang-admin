@@ -1,70 +1,35 @@
-import { useEffect, useState } from "react";
-import LoadDataPending from "~/component/LoadDataPending";
+import { TableNews } from "~/component/Table";
 import config from "~/config";
 import DefaultItem from "~/layout/DefaultItem";
 import * as newServices from "~/Services/newServices";
+import LayoutLoadingList from "~/context/LayoutLoadingList";
+
+const LIMIT = 4;
 
 const ListNews = () => {
-  const [dataNews, setDataNews] = useState([]);
 
-  useEffect(() => {
-    const dataGetNews = async () => {
-      const response = await newServices.listNews(12, 1);
+  const GetListNews = async (perPages) => {
+    const response = await newServices.listNews(LIMIT, perPages);
+    if (response.status === 200) {
+      return response.data;
+    }
+    return response;
+  };
 
-      if (response?.data) {
-        setDataNews(response);
-      }
-    };
+  const DeleteNews = async (id, token) => {
+    const response = await newServices.DeleteNews(id, token);
 
-    dataGetNews();
-  }, []);
-
+    return response;
+  };
   return (
     <DefaultItem
       textButton={"Thêm tin tức"}
       pathButton={config.path.AddNews}
       title={"Danh sách tin tức"}
     >
-      <LoadDataPending data={dataNews?.data}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col align-middle">Hình ảnh</th>
-              <th scope="col" className="w-25">Tiêu đề</th>
-              <th scope="col" className="w-25">Mô tả</th>
-              <th scope="col">Người đăng</th>
-              <th scope="col">Loại</th>
-              <th scope="col">Thời gian</th>
-              <th scope="col">Chức năng</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataNews?.data &&
-              dataNews.data.map((item) => {
-                return (
-                  <tr key={item.id}>
-                    <td>
-                      <img
-                        src={item.image}
-                        alt=""
-                        style={{ width: "200px", height: "200px" }}
-                      />
-                    </td>
-                    <td>{item.name}</td>
-                    <td>{item.shortContent}</td>
-                    <td>{item.poster}</td>
-                    <td>{item.type}</td>
-                    <td>{item.created_at}</td>
-                    <td style={{whiteSpace: 'nowrap'}}>
-                      <button type="button" className="text-white btn btn-danger">Xóa</button>
-                      <button type="button" className="text-white btn btn-primary">Sửa</button>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      </LoadDataPending>
+      <LayoutLoadingList CallApi={GetListNews} DeleteFuc={DeleteNews}>
+        <TableNews />
+      </LayoutLoadingList>
     </DefaultItem>
   );
 };

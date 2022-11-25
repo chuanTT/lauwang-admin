@@ -18,3 +18,9 @@ export const detailsNews = async (id_news) => {
 
     return response;
 }
+
+export const DeleteNews = async (id, token) => {
+    let response = await resquest.del(`${folderName}/delete_news/${id}`, token)
+
+    return response;
+}

@@ -16,13 +16,23 @@ const DataSlider = [
   {
     name: "Thực đơn",
     icon: "icon-clipboard",
-    path: config.path.Menu,
+    path: config.path.Menu
   },
 
   {
     name: "Đặt bàn",
     icon: "icon-layout",
     path: config.path.Table,
+    children: [
+      {
+        path: config.path.TableBook,
+        name: "Bàn chờ duyệt"
+      },
+      {
+        path: config.path.TableStatus,
+        name: "Trạng thái bàn"
+      }
+    ]
   },
 
   {

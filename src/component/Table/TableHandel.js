@@ -1,61 +1,14 @@
-import { useContext, useState, useEffect, useRef } from "react";
+import { useContext } from "react";
+import { NavLink } from "react-router-dom";
+import config from "~/config";
 
-import LayoutLoading from "../LayoutLoading";
-import * as tableServices from "~/Services/tableServices";
-import { userDataContext } from "~/context/GetDataUser";
+import { loadingListContext } from "~/context/LayoutLoadingList";
 
 const TableHandel = () => {
-  const { token } = useContext(userDataContext);
-  const [dataTable, setDataTable] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [perPages, setPerPages] = useState(1);
-  const [updated, setUpdated] = useState(false);
-  const [isPending, setIsPending] = useState(true);
-  const idOrder = useRef();
-
-  useEffect(() => {
-    const dataGetTable = async () => {
-      const response = await tableServices.TableListBook(10, perPages, token);
-
-      if (response?.data) {
-        setDataTable(response);
-        setIsPending(prev => !prev)
-      }
-    };
-
-    dataGetTable();
-  }, [token, perPages, updated]);
-
-  const handelDelete = (id) => {
-    idOrder.current = id;
-    setIsOpen((prev) => !prev);
-  };
-
-  const deleteOrder = async () => {
-    let isDelete = false;
-    const response = await tableServices.DeleteOrder(idOrder.current, token);
-
-    if (response.status === 200) {
-      isDelete = true
-    }
-
-    return isDelete
-  };
+  const { handelShow, data } = useContext(loadingListContext);
 
   return (
-    <LayoutLoading
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      callApi={deleteOrder}
-      dataPaging={dataTable?.paging}
-      isLoadPending={isPending}
-      setPerPages={setPerPages}
-      CallBackSuss={() => {
-        setUpdated(prev => !prev)
-        setIsPending(prev => !prev)
-      }}
-      onChangePaging={setIsPending}
-    >
+    <>
       <table className="table">
         <thead>
           <tr>
@@ -74,8 +27,8 @@ const TableHandel = () => {
           </tr>
         </thead>
         <tbody>
-          {dataTable?.data &&
-            dataTable.data.map((item) => {
+          {data?.data &&
+            data.data.map((item) => {
               return (
                 <tr key={item.id}>
                   <td>{item.full_name}</td>
@@ -86,17 +39,18 @@ const TableHandel = () => {
                   <td>{item.num_adult}</td>
                   <td>{item.num_child}</td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    <button
+                    <NavLink
+                      to={`${config.path.TableBook}/${item.id}`}
                       type="button"
                       className="text-white btn btn-success"
                     >
                       Duyệt
-                    </button>
+                    </NavLink>
                     <button
                       type="button"
                       className="text-white btn btn-danger"
                       onClick={() => {
-                        handelDelete(item.id);
+                        handelShow(item.id);
                       }}
                     >
                       Hủy
@@ -107,7 +61,7 @@ const TableHandel = () => {
             })}
         </tbody>
       </table>
-    </LayoutLoading>
+    </>
   );
 };
 
